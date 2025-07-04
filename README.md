@@ -9,17 +9,42 @@ BiteWise는 음식 사진을 분석하여 칼로리, 영양소를 자동 추출�
 - 사용자 맞춤형 식단 추천 및 섭취 기록
 - Flutter 앱 UI 및 대시보드 시각화
 
-## ⚙️ 기술 스택
-- **Frontend**: Flutter
-- **Backend**: Django REST API
-- **AI Server**: FastAPI + YOLOv8, EasyOCR
-- **DB**: MariaDB
-- **Data**: AIHub, Kaggle Food-11
+## 🧱 시스템 아키텍처
 
-## 🚀 실행 방법
+![architecture](./d15e99b8-3236-4b62-8d23-7511caca861c.png)
 
-### 1. Python 환경 구축
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+- **Frontend:**
+  - Flutter로 모바일 앱 개발
+  - 사용자 사진 입력 및 결과 조회 인터페이스 제공
+
+- **Backend (Django):**
+  - 사용자 요청 처리, 사용자 정보 및 식단 분석 결과 저장
+  - FastAPI AI 서버와 통신하여 분석 요청 전송
+  - MariaDB와 연동하여 데이터 저장
+
+- **AI Server (FastAPI):**
+  - 음식 이미지 분석을 위한 딥러닝 모델 실행
+  - 분석 결과를 Django 서버로 반환
+  - Jupyter Notebook 기반 개발 가능
+
+- **Database:**
+  - MariaDB를 통해 사용자 정보, 음식 기록, 추천 결과 등 관리
+
+- **Version Control:**
+  - Git으로 소스 코드 버전 관리
+
+---
+
+## 🛠️ 기술 스택
+
+| 분야        | 기술                    |
+|-------------|-------------------------|
+| 프론트엔드  | Flutter                 |
+| 백엔드      | Django                  |
+| AI 서버     | FastAPI, PyTorch/TensorFlow |
+| DB          | MariaDB                |
+| 협업 도구   | Git, GitHub             |
+| 개발 환경   | Jupyter Notebook        |
+
+---
+
