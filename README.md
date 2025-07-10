@@ -68,3 +68,9 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+
+## Yolov8 사용방법
+### 1. 모델 학습
+```bash
+python train_classifier.py
+```
