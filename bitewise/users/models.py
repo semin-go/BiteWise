@@ -40,7 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin) :
     current_weight = models.FloatField(null=True, blank=True) # 시작 체중 (kg)
     target_weight = models.FloatField(null=True, blank=True)  # 목표 체중 (kg)
     diet_plan = models.CharField(max_length=10, choices=DIET_PLAN_CHOICES, null=True, blank=True)
-    
+
     is_active = models.BooleanField(default=True)             # 활성화
     date_joined = models.DateTimeField(auto_now_add=True)     # 가입일
 

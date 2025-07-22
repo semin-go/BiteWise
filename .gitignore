@@ -1,10 +1,27 @@
+# Virtual Environment
 .env
-
 venv/
 .venv/
 
+# Python
 __pycache__/
 *.py[cod]
+*.sqlite3
 *$py.class
+*.log
 
+# OS
 .DS_Store
+
+# Django
+db.sqlite3
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.py~*
+
+# VS Code
+.vscode/
+
+.github/
