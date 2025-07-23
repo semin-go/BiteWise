@@ -40,8 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'drf_yasg', # Swager 세팅
-    'users',
+    'drf_yasg',      # Swager 세팅
+    'users',         # 회원 관련
+    'nutrition',     # OCR
 ]
 
 # AUTH_USER_MODEL
