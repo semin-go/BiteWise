@@ -64,11 +64,13 @@ class OCRUploadView(APIView):
     
         
     def extract_nutrition_data(self, texts, scores):
-        # 정규화 + 신뢰도 필터링은 이미 된 상태라고 가정하고 진행
+        # 신뢰도 필터링 + 정규화
         clean_texts = [
             re.sub(r'\s+', '', text.lower().replace('㎉', 'kcal').replace('omg', '0mg'))
             for text, score in zip(texts, scores) if score >= 0.6
         ]
+
+        print("[DEBUG] Cleaned Texts:", clean_texts)
 
         data = {'calories': None, 'carbohydrate': None, 'protein': None, 'fat': None}
 
@@ -77,44 +79,59 @@ class OCRUploadView(APIView):
             text = clean_texts[i]
 
             # 칼로리
-            if any(label in text for label in ['칼로리', '열량', 'kcal']) or re.match(r'\d+(\.\d+)?\s*(kcal|㎉)', text):
-                match = re.search(r'(\d+(\.\d+)?)\s*(kcal|㎉)', text)
-                if match and '%' not in text:
-                    data['calories'] = float(match.group(1))
-                else:
-                    for j in range(i+1, min(i+4, len(clean_texts))):
-                        match = re.search(r'(\d+(\.\d+)?)\s*(kcal|㎉)', clean_texts[j])
-                        if match and '%' not in clean_texts[j]:
-                            data['calories'] = float(match.group(1))
-                            break
+            print(f"[DEBUG] checking kcal in: {text}")
+            match = re.search(r'(\d+(?:\.\d+)?)(?=kcal|㎉)', text)
+            if match and '%' not in text:
+                data['calories'] = int(float(match.group(1)))
+            else:
+                for j in range(i + 1, min(i + 4, len(clean_texts))): 
+                    print(f"[DEBUG] fallback checking kcal in: {clean_texts[j]}")
+                    match = re.search(r'(\d+(?:\.\d+)?)(?=kcal|㎉)', clean_texts[j])
+                    if match and '%' not in clean_texts[j]:
+                        data['calories'] = int(float(match.group(1)))
+                        break
 
             # 탄수화물
-            elif '탄수화물' in text:
-                for j in range(i+1, min(i+4, len(clean_texts))):
-                    match = re.search(r'(\d+(\.\d+)?)\s*g', clean_texts[j])
-                    if match and '%' not in clean_texts[j]:
-                        data['carbohydrate'] = float(match.group(1))
-                        break
-
+            if '탄수화물' in text:
+                match = re.search(r'(\d+(?:\.\d+)?)g', text)
+                if match and '%' not in text:
+                    data['carbohydrate'] = float(match.group(1))
+                else:
+                    for j in range(i+1, min(i+4, len(clean_texts))):
+                        match = re.search(r'(\d+(?:\.\d+)?)g', clean_texts[j])
+                        if match and '%' not in clean_texts[j]:
+                            data['carbohydrate'] = float(match.group(1))
+                            break
+            
             # 단백질
-            elif '단백질' in text:
-                for j in range(i+1, min(i+4, len(clean_texts))):
-                    match = re.search(r'(\d+(\.\d+)?)\s*g', clean_texts[j])
-                    if match and '%' not in clean_texts[j]:
-                        data['protein'] = float(match.group(1))
-                        break
+            if '단백질' in text:
+                match = re.search(r'(\d+(?:\.\d+)?)g', text)
+                if match and '%' not in text:
+                    data['protein'] = float(match.group(1))
+                else:
+                    for j in range(i+1, min(i+4, len(clean_texts))):
+                        match = re.search(r'(\d+(?:\.\d+)?)g', clean_texts[j])
+                        if match and '%' not in clean_texts[j]:
+                            data['protein'] = float(match.group(1))
+                            break
 
             # 지방 (포화지방, 트랜스 제외)
-            elif '지방' in text and all(x not in text for x in ['포화', '트랜스']):
-                for j in range(i+1, min(i+4, len(clean_texts))):
-                    match = re.search(r'(\d+(\.\d+)?)\s*g', clean_texts[j])
-                    if match and '%' not in clean_texts[j]:
-                        data['fat'] = float(match.group(1))
-                        break
+            if '지방' in text and all(x not in text for x in ['포화', '트랜스']):
+                # 먼저 현재 줄에서 시도
+                match = re.search(r'(\d+(\.\d+)?)g', text)
+                if match and '%' not in text:
+                    data['fat'] = float(match.group(1))
+                else:
+                    # 다음 줄들에서 fallback
+                    for j in range(i+1, min(i+4, len(clean_texts))):
+                        match = re.search(r'(\d+(\.\d+)?)g', clean_texts[j])
+                        if match and '%' not in clean_texts[j]:
+                            data['fat'] = float(match.group(1))
+                            break
 
             i += 1
 
-        # None → 기본값 대체
+        # 기본값 0.0 처리
         for k in data:
             if data[k] is None:
                 data[k] = 0.0
