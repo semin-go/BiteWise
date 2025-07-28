@@ -82,7 +82,7 @@ class OCRUploadView(APIView):
             print(f"[DEBUG] checking kcal in: {text}")
             match = re.search(r'(\d+(?:\.\d+)?)(?=kcal|㎉)', text)
             if match and '%' not in text:
-                data['calories'] = int(float(match.group(1)))
+                data['calories'] = float(match.group(1))
             else:
                 for j in range(i + 1, min(i + 4, len(clean_texts))): 
                     print(f"[DEBUG] fallback checking kcal in: {clean_texts[j]}")

@@ -1,7 +1,7 @@
 from django.db import models
 
 class Nutrition(models.Model):
-    calories = models.IntegerField()
+    calories = models.FloatField()
     carbohydrate = models.FloatField()
     protein = models.FloatField()
     fat = models.FloatField()
